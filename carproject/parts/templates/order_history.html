@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders | DriveGear</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-950 text-white">
+    <nav class="px-6 py-4 bg-black/70">
+        <a href="{% url 'home' %}" class="font-bold text-amber-400">DriveGear</a>
+    </nav>
+    <main class="max-w-5xl mx-auto px-6 py-10">
+        <h1 class="text-3xl font-bold mb-8">Order History</h1>
+        {% for order in orders %}
+            <div class="mb-5 rounded-xl border border-white/10 bg-stone-900 p-5">
+                <div class="flex flex-wrap justify-between gap-3">
+                    <h2 class="font-bold">Order #{{ order.id }}</h2>
+                    <span class="text-amber-400">Rs {{ order.total }}</span>
+                    <span class="text-stone-400">{{ order.get_status_display }}</span>
+                </div>
+                <div class="mt-4 text-sm text-stone-300">
+                    {% for item in order.items.all %}
+                        <p>{{ item.product_name }} x {{ item.quantity }} - Rs {{ item.subtotal }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-stone-400">No orders yet.</p>
+        {% endfor %}
+    </main>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart | DriveGear</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(212, 175, 106, 0.12), transparent 34%),
+                #07080b;
+            color: #f7f3ea;
+        }
+
+        .display-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .gold-text {
+            background: linear-gradient(135deg, #fff3cf 0%, #d4af6a 48%, #8cc7d8 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .surface {
+            background: linear-gradient(145deg, rgba(18, 22, 30, 0.9), rgba(9, 11, 16, 0.98));
+            border: 1px solid rgba(212, 175, 106, 0.18);
+            box-shadow: 0 22px 60px rgba(0, 0, 0, 0.34);
+        }
+
+        .nav-surface {
+            background: rgba(7, 8, 11, 0.88);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(212, 175, 106, 0.18);
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav-surface sticky top-0 z-50">
+        <div class="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-4 px-5 py-4 lg:px-10">
+            <a href="{% url 'home' %}" class="flex items-center gap-3">
+                <span class="flex h-10 w-10 items-center justify-center rounded bg-[#d4af6a] text-sm font-black text-black">DG</span>
+                <span>
+                    <span class="block text-xl font-black tracking-wide text-white">DRIVE<span class="gold-text">GEAR</span></span>
+                    <span class="block text-[10px] uppercase tracking-[0.28em] text-stone-500">Performance Cart</span>
+                </span>
+            </a>
+            <div class="flex flex-wrap items-center gap-3">
+                {% if user.is_authenticated %}
+                    <div class="flex items-center gap-3 rounded border border-[#d4af6a]/25 bg-white/[0.04] px-4 py-2">
+                        <span class="flex h-8 w-8 items-center justify-center rounded bg-[#d4af6a] text-xs font-black uppercase text-black">
+                            {{ user.username|first }}
+                        </span>
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-stone-500">Client</p>
+                            <p class="text-sm font-bold text-white">{{ user.username }}</p>
+                        </div>
+                    </div>
+                    <a href="{% url 'order_history' %}" class="rounded border border-white/10 px-4 py-2 text-sm font-semibold text-stone-200 transition hover:border-[#d4af6a] hover:text-[#d4af6a]">
+                        Orders
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="rounded border border-[#d4af6a]/30 px-4 py-2 text-sm font-semibold text-[#d4af6a] transition hover:bg-[#d4af6a] hover:text-black">
+                        Client Login
+                    </a>
+                {% endif %}
+                <a href="{% url 'home' %}" class="rounded border border-white/10 px-4 py-2 text-sm font-semibold text-stone-200 transition hover:border-[#d4af6a] hover:text-[#d4af6a]">
+                    Continue Shopping
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="mx-auto max-w-[1440px] px-5 py-12 lg:px-10">
+        <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+            <div>
+                <p class="text-xs font-black uppercase tracking-[0.26em] text-[#d4af6a]">Selected Components</p>
+                <h1 class="display-font mt-2 text-5xl font-bold text-white">Your Cart</h1>
+            </div>
+            <p class="rounded border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-stone-400">
+                {{ cart_count|default:0 }} item(s) reserved
+            </p>
+        </div>
+
+        {% if messages %}
+            <div class="mb-6 space-y-3">
+                {% for message in messages %}
+                    <p class="rounded border border-[#d4af6a]/30 bg-[#d4af6a]/10 p-3 text-sm text-[#f0d28c]">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if cart_items %}
+            <div class="grid gap-8 lg:grid-cols-[1fr_380px]">
+                <section class="space-y-4">
+                    {% for item in cart_items %}
+                        <article class="surface rounded p-5">
+                            <div class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+                                <div class="flex gap-4">
+                                    <div class="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded bg-[#151923]">
+                                        {% if item.image %}
+                                            <img src="{{ item.image }}" alt="{{ item.name }}" class="h-full w-full object-cover">
+                                        {% else %}
+                                            <span class="text-xl font-black gold-text">DG</span>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h2 class="display-font text-2xl font-bold text-white">{{ item.name }}</h2>
+                                        <p class="mt-1 text-sm text-stone-500">Stock available: {{ item.stock_quantity }}</p>
+                                        <p class="mt-3 text-xl font-black gold-text">Rs {{ item.price }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <form method="POST" action="{% url 'update_cart' item.id %}" class="flex items-center gap-2">
+                                        {% csrf_token %}
+                                        <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.stock_quantity }}" class="h-11 w-20 rounded border border-white/10 bg-[#0f1219] px-3 text-white focus:border-[#d4af6a] focus:outline-none">
+                                        <button class="h-11 rounded bg-[#d4af6a] px-4 text-sm font-black text-black transition hover:bg-[#f0d28c]">
+                                            Update
+                                        </button>
+                                    </form>
+                                    <a href="{% url 'remove_from_cart' item.id %}" class="h-11 rounded border border-red-500/40 px-4 py-3 text-sm font-bold leading-none text-red-300 transition hover:bg-red-500/10">
+                                        Remove
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4 text-sm">
+                                <span class="text-stone-500">Quantity: {{ item.quantity }}</span>
+                                <span class="text-lg font-bold text-white">Subtotal: <span class="gold-text">Rs {{ item.subtotal }}</span></span>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </section>
+
+                <aside class="surface h-fit rounded p-6 lg:sticky lg:top-24">
+                    <p class="text-xs font-black uppercase tracking-[0.24em] text-[#d4af6a]">Order Summary</p>
+                    <div class="mt-6 space-y-4 text-sm">
+                        <div class="flex justify-between border-b border-white/10 pb-4">
+                            <span class="text-stone-400">Items</span>
+                            <span>{{ cart_count }}</span>
+                        </div>
+                        <div class="flex justify-between border-b border-white/10 pb-4">
+                            <span class="text-stone-400">Estimated shipping</span>
+                            <span class="text-emerald-300">Calculated at checkout</span>
+                        </div>
+                        <div class="flex justify-between text-2xl font-black">
+                            <span>Total</span>
+                            <span class="gold-text">Rs {{ total }}</span>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'checkout' %}" class="mt-8 block rounded bg-[#d4af6a] px-6 py-4 text-center text-sm font-black uppercase tracking-wider text-black transition hover:bg-[#f0d28c]">
+                        Proceed to Checkout
+                    </a>
+                    <a href="{% url 'home' %}" class="mt-3 block rounded border border-white/10 px-6 py-4 text-center text-sm font-bold text-stone-200 transition hover:border-[#d4af6a] hover:text-[#d4af6a]">
+                        Add More Parts
+                    </a>
+                </aside>
+            </div>
+        {% else %}
+            <section class="surface rounded p-12 text-center">
+                <p class="text-xs font-black uppercase tracking-[0.26em] text-[#d4af6a]">No items selected</p>
+                <h2 class="display-font mt-3 text-4xl font-bold text-white">Your cart is empty</h2>
+                <p class="mx-auto mt-4 max-w-xl text-stone-400">Browse premium parts and build your performance order.</p>
+                <a href="{% url 'home' %}" class="mt-8 inline-block rounded bg-[#d4af6a] px-6 py-3 font-black text-black transition hover:bg-[#f0d28c]">
+                    Explore Catalog
+                </a>
+            </section>
+        {% endif %}
+    </main>
+</body>
+</html>

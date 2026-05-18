@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | DriveGear</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-950 text-white">
+    <nav class="px-6 py-4 bg-black/70">
+        <a href="{% url 'home' %}" class="font-bold text-amber-400">DriveGear</a>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-6 py-10">
+        <h1 class="text-3xl font-bold mb-6">Checkout</h1>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p class="mb-3 rounded border border-amber-500/30 bg-amber-500/10 p-3 text-amber-200">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        <div class="grid gap-6 lg:grid-cols-[1fr_0.8fr]">
+            <form method="POST" class="rounded-xl border border-white/10 bg-stone-900 p-6">
+                {% csrf_token %}
+                <h2 class="mb-4 text-xl font-bold text-amber-400">Delivery Details</h2>
+                <div class="grid gap-4">
+                    <input name="full_name" placeholder="Full name" class="rounded bg-stone-800 px-4 py-3">
+                    <input name="phone" placeholder="Phone number" class="rounded bg-stone-800 px-4 py-3">
+                    <input name="email" placeholder="Email optional" class="rounded bg-stone-800 px-4 py-3">
+                    <textarea name="address" rows="4" placeholder="Complete delivery address" class="rounded bg-stone-800 px-4 py-3"></textarea>
+                    <select name="payment_method" class="rounded bg-stone-800 px-4 py-3">
+                        <option value="cod">Cash on Delivery</option>
+                        <option value="bank">Bank Transfer</option>
+                        <option value="easypaisa">EasyPaisa</option>
+                        <option value="jazzcash">JazzCash</option>
+                    </select>
+                    <input name="coupon_code" value="{{ coupon_code }}" placeholder="Coupon code e.g. SAVE10" class="rounded bg-stone-800 px-4 py-3">
+                    <button name="place_order" value="1" class="rounded-full bg-amber-500 px-6 py-3 font-semibold text-black">Place Order</button>
+                </div>
+            </form>
+
+            <div class="rounded-xl border border-white/10 bg-stone-900 p-6">
+                <h2 class="mb-4 text-xl font-bold text-amber-400">Order Summary</h2>
+                {% for item in cart_items %}
+                    <div class="flex justify-between border-b border-white/10 py-3 text-sm">
+                        <span>{{ item.name }} x {{ item.quantity }}</span>
+                        <span>Rs {{ item.subtotal }}</span>
+                    </div>
+                {% endfor %}
+                <div class="mt-5 space-y-2 text-sm">
+                    <div class="flex justify-between"><span>Subtotal</span><span>Rs {{ subtotal }}</span></div>
+                    <div class="flex justify-between text-amber-300"><span>Discount</span><span>- Rs {{ discount_amount }}</span></div>
+                    <div class="flex justify-between border-t border-white/10 pt-3 text-2xl font-bold"><span>Total</span><span>Rs {{ total }}</span></div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

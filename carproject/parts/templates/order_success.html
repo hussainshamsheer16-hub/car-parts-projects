@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Success | DriveGear</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-950 text-white">
+    <main class="min-h-screen flex items-center justify-center px-6 text-center">
+        <div>
+            <h1 class="text-4xl font-bold text-amber-400">Order placed successfully</h1>
+            <p class="mt-4 text-stone-400">Thank you for shopping with DriveGear.</p>
+            {% if order %}
+                <div class="mt-6 rounded-xl border border-white/10 bg-stone-900 p-5 text-left">
+                    <p><strong>Order ID:</strong> #{{ order.id }}</p>
+                    <p><strong>Name:</strong> {{ order.full_name }}</p>
+                    <p><strong>Payment:</strong> {{ order.get_payment_method_display }}</p>
+                    <p><strong>Total:</strong> Rs {{ order.total }}</p>
+                    <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+                </div>
+            {% endif %}
+            <a href="{% url 'home' %}" class="mt-8 inline-block rounded-full bg-amber-500 px-6 py-3 font-semibold text-black">Back to Home</a>
+        </div>
+    </main>
+</body>
+</html>

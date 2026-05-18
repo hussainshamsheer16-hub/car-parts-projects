@@ -1,0 +1,100 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <h1 style="color: #c9a96e; margin-bottom: 20px;">📋 Inventory Management Report</h1>
+    
+    <!-- Summary Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div style="background: linear-gradient(135deg, #1a1a2e, #0f0f1a); padding: 15px; border-radius: 10px; text-align: center;">
+            <h3 style="margin: 0; color: #c9a96e;">Total SKUs</h3>
+            <p style="font-size: 28px; font-weight: bold; margin: 10px 0;">{{ total_products }}</p>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #1a1a2e, #0f0f1a); padding: 15px; border-radius: 10px; text-align: center;">
+            <h3 style="margin: 0; color: #51cf66;">Total Stock Units</h3>
+            <p style="font-size: 28px; font-weight: bold; margin: 10px 0;">{{ total_stock_units }}</p>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #1a1a2e, #0f0f1a); padding: 15px; border-radius: 10px; text-align: center;">
+            <h3 style="margin: 0; color: #ffa500;">Inventory Value</h3>
+            <p style="font-size: 22px; font-weight: bold; margin: 10px 0;">Rs {{ total_inventory_value }}</p>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #1a1a2e, #0f0f1a); padding: 15px; border-radius: 10px; text-align: center;">
+            <h3 style="margin: 0; color: #c9a96e;">Avg Stock/Product</h3>
+            <p style="font-size: 28px; font-weight: bold; margin: 10px 0;">{{ average_stock }}</p>
+        </div>
+
+        <div style="background: linear-gradient(135deg, #1a1a2e, #0f0f1a); padding: 15px; border-radius: 10px; text-align: center;">
+            <h3 style="margin: 0; color: #8cc7d8;">Brands</h3>
+            <p style="font-size: 28px; font-weight: bold; margin: 10px 0;">{{ brand_count }}</p>
+        </div>
+
+        <div style="background: linear-gradient(135deg, #1a1a2e, #0f0f1a); padding: 15px; border-radius: 10px; text-align: center;">
+            <h3 style="margin: 0; color: #8cc7d8;">Vehicles</h3>
+            <p style="font-size: 28px; font-weight: bold; margin: 10px 0;">{{ vehicle_count }}</p>
+        </div>
+    </div>
+    
+    <!-- Products Table -->
+    <div style="background: #1a1a2e; padding: 20px; border-radius: 10px; overflow-x: auto;">
+        <h2 style="color: #c9a96e;">📦 Product Inventory Details</h2>
+        
+        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+            <thead>
+                <tr style="border-bottom: 2px solid #c9a96e;">
+                    <th style="text-align: left; padding: 12px;">ID</th>
+                    <th style="text-align: left; padding: 12px;">Product Name</th>
+                    <th style="text-align: left; padding: 12px;">Brand</th>
+                    <th style="text-align: left; padding: 12px;">Vehicle</th>
+                    <th style="text-align: left; padding: 12px;">Category</th>
+                    <th style="text-align: right; padding: 12px;">Price</th>
+                    <th style="text-align: center; padding: 12px;">Stock</th>
+                    <th style="text-align: right; padding: 12px;">Total Value</th>
+                    <th style="text-align: center; padding: 12px;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr style="border-bottom: 1px solid #333;">
+                    <td style="padding: 12px;">{{ product.id }}</td>
+                    <td style="padding: 12px;">
+                        <strong>{{ product.name }}</strong>
+                        {% if product.is_featured %}
+                            <span style="color: #c9a96e;">⭐</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px; color: #8cc7d8;">{{ product.brand|default:"-" }}</td>
+                    <td style="padding: 12px; color: #ddd;">{{ product.vehicle_name|default:"-" }}</td>
+                    <td style="padding: 12px;">{{ product.category.name }}</td>
+                    <td style="text-align: right; padding: 12px;">Rs {{ product.price }}</td>
+                    <td style="text-align: center; padding: 12px;">
+                        <span style="font-weight: bold; 
+                            {% if product.stock_quantity <= 0 %}color: #ff6b6b;
+                            {% elif product.stock_quantity <= product.low_stock_threshold %}color: #ffa500;
+                            {% else %}color: #51cf66;{% endif %}">
+                            {{ product.stock_quantity }}
+                        </span>
+                    </td>
+                    <td style="text-align: right; padding: 12px;">Rs {{ product.total_value }}</td>
+                    <td style="text-align: center; padding: 12px;">
+                        {% if product.stock_quantity <= 0 %}
+                            <span style="color: #ff6b6b;">⛔ Out of Stock</span>
+                        {% elif product.stock_quantity <= product.low_stock_threshold %}
+                            <span style="color: #ffa500;">⚠️ Low Stock</span>
+                        {% else %}
+                            <span style="color: #51cf66;">✅ In Stock</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 40px;">No products found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

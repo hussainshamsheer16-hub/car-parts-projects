@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | DriveGear</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-950 text-white">
+    <nav class="px-6 py-4 bg-black/70">
+        <a href="{% url 'home' %}" class="font-bold text-amber-400">DriveGear</a>
+    </nav>
+    <main class="max-w-3xl mx-auto px-6 py-10">
+        <h1 class="text-3xl font-bold mb-3">Contact DriveGear</h1>
+        <p class="mb-6 text-stone-400">Ask about fitment, availability, bulk orders, or custom parts.</p>
+        {% if messages %}
+            {% for message in messages %}
+                <p class="mb-3 rounded border border-amber-500/30 bg-amber-500/10 p-3 text-amber-200">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        <form method="POST" class="grid gap-4 rounded-xl border border-white/10 bg-stone-900 p-6">
+            {% csrf_token %}
+            <input name="name" placeholder="Your name" class="rounded bg-stone-800 px-4 py-3">
+            <input name="email" placeholder="Email" class="rounded bg-stone-800 px-4 py-3">
+            <input name="subject" placeholder="Subject" class="rounded bg-stone-800 px-4 py-3">
+            <textarea name="message" rows="5" placeholder="Message" class="rounded bg-stone-800 px-4 py-3"></textarea>
+            <button class="rounded-full bg-amber-500 px-6 py-3 font-bold text-black">Send Message</button>
+        </form>
+    </main>
+</body>
+</html>
